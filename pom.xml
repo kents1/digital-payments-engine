@@ -7,23 +7,46 @@
   <groupId>uk.co.digitalpayment</groupId>
   <artifactId>digtial-payments-engine</artifactId>
   <version>1.0.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <name>Digital Payments Engine</name>
+
+  <modules>
+    <module>digital-payments-engine-domain</module>
+    <module>digital-payments-engine-api</module>
+    <module>digital-payments-engine-service</module>
+    <module>digital-payments-engine-service-impl</module>
+    <module>digital-payments-engine-repository</module>
+    <module>digital-payments-engine-repository-impl</module>
+    <module>digital-payments-engine-app</module>
+    <module>digital-payments-engine-functional-test</module>
+  </modules>
 
   <properties>
+    <java.version>11</java.version>
+
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <maven.compiler.parameters>true</maven.compiler.parameters>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>11</maven.compiler.source>
-    <maven.compiler.target>11</maven.compiler.target>
+
+    <maven.compiler.parameters>true</maven.compiler.parameters>
+    <maven.compiler.source>${java.version}</maven.compiler.source>
+    <maven.compiler.target>${java.version}</maven.compiler.target>
 
     <!-- Core Versions -->
-    <quarkus.version>1.0.0.CR1</quarkus.version>
+    <quarkus.version>1.0.0.Final</quarkus.version>
+    <jdbi.version>3.10.1</jdbi.version>
+
+    <!-- Library Versions -->
+    <lombok.version>1.18.8</lombok.version>
+    <mockito-core.version>3.0.0</mockito-core.version>
 
     <!-- Plugin Versions -->
     <surefire-plugin.version>2.22.0</surefire-plugin.version>
     <failsafe-plugin.version>2.22.1</failsafe-plugin.version>
-
+    <resources-plugin.version>3.1.0</resources-plugin.version>
     <compiler-plugin.version>3.8.1</compiler-plugin.version>
-    <docker-maven-plugin.version>0.20.1</docker-maven-plugin.version>
+    <docker-maven-plugin.version>0.31.0</docker-maven-plugin.version>
+    <jandex-maven-plugin.version>1.0.6</jandex-maven-plugin.version>
   </properties>
 
   <dependencyManagement>
@@ -35,124 +58,167 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
+
+      <!-- Database -->
+      <dependency>
+        <groupId>org.jdbi</groupId>
+        <artifactId>jdbi3-bom</artifactId>
+        <type>pom</type>
+        <version>${jdbi.version}</version>
+        <scope>import</scope>
+      </dependency>
+
+      <!-- Utils -->
+      <dependency>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+        <version>${lombok.version}</version>
+        <scope>provided</scope>
+      </dependency>
+
+      <!-- Test -->
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-core</artifactId>
+        <version>${mockito-core.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-junit-jupiter</artifactId>
+        <version>${mockito-core.version}</version>
+        <scope>test</scope>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
 
-  <dependencies>
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-resteasy</artifactId>
-    </dependency>
-
-    <!-- Health -->
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-smallrye-health</artifactId>
-    </dependency>
-
-    <!-- Database dependencies -->
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-flyway</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-jdbc-postgresql</artifactId>
-    </dependency>
-
-    <!-- Testing -->
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-junit5</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.rest-assured</groupId>
-      <artifactId>rest-assured</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-
   <build>
-    <plugins>
-      <plugin>
-        <groupId>io.quarkus</groupId>
-        <artifactId>quarkus-maven-plugin</artifactId>
-        <version>${quarkus.version}</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>build</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>${compiler-plugin.version}</version>
-      </plugin>
-      <plugin>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>${surefire-plugin.version}</version>
-        <configuration>
-          <systemProperties>
-            <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
-          </systemProperties>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-failsafe-plugin</artifactId>
-        <version>${failsafe-plugin.version}</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>integration-test</goal>
-              <goal>verify</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>io.fabric8</groupId>
-        <artifactId>docker-maven-plugin</artifactId>
-        <version>${docker-maven-plugin.version}</version>
-        <executions>
-          <execution>
-            <id>prepare-it-database</id>
-            <goals>
-              <goal>start</goal>
-            </goals>
-            <configuration>
-              <images>
-                <image>
-                  <name>mysql:8.0</name>
-                  <alias>it-database</alias>
-                  <run>
-                    <ports>
-                      <port>it-database.port:3306</port>
-                    </ports>
-                    <wait>
-                      <log>(?s)X Plugin ready for connections. Socket: '/var/run/mysqld/mysqlx.sock' bind-address: '::' port: 33060</log>
-                      <time>60000</time>
-                    </wait>
-                    <env>
-                      <MYSQL_ROOT_PASSWORD>integration</MYSQL_ROOT_PASSWORD>
-                    </env>
-                  </run>
-                </image>
-              </images>
-            </configuration>
-          </execution>
-          <execution>
-            <id>remove-it-database</id>
-            <goals>
-              <goal>stop</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-resources-plugin</artifactId>
+          <version>${resources-plugin.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>io.quarkus</groupId>
+          <artifactId>quarkus-maven-plugin</artifactId>
+          <version>${quarkus.version}</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>${compiler-plugin.version}</version>
+          <configuration>
+            <release>${java.version}</release>
+          </configuration>
+        </plugin>
+        <plugin>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>${surefire-plugin.version}</version>
+          <configuration>
+            <systemProperties>
+              <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+            </systemProperties>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.jboss.jandex</groupId>
+          <artifactId>jandex-maven-plugin</artifactId>
+          <version>${jandex-maven-plugin.version}</version>
+          <executions>
+            <execution>
+              <id>make-index</id>
+              <goals>
+                <goal>jandex</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>io.fabric8</groupId>
+          <artifactId>docker-maven-plugin</artifactId>
+          <version>${docker-maven-plugin.version}</version>
+          <configuration>
+            <images>
+              <!-- Database -->
+              <image>
+                <name>mysql:8.0</name>
+                <alias>docker-database</alias>
+                <run>
+                  <containerNamePattern>dpe-mysql</containerNamePattern>
+                  <ports>
+                    <port>3366:3306</port>
+                  </ports>
+                  <wait>
+                    <log>(?s)X Plugin ready for connections. Socket: '/var/run/mysqld/mysqlx.sock' bind-address: '::' port: 33060</log>
+                    <time>60000</time>
+                  </wait>
+                  <env>
+                    <MYSQL_RANDOM_ROOT_PASSWORD>yes</MYSQL_RANDOM_ROOT_PASSWORD>
+                    <MYSQL_DATABASE>payment_engine</MYSQL_DATABASE>
+                    <MYSQL_USER>application</MYSQL_USER>
+                    <MYSQL_PASSWORD>password</MYSQL_PASSWORD>
+                  </env>
+                </run>
+              </image>
+              <!-- Keycloak -->
+              <image>
+                <name>jboss/keycloak:8.0.0</name>
+                <alias>docker-keycloak</alias>
+                <run>
+                  <containerNamePattern>dpe-keycloak</containerNamePattern>
+                  <ports>
+                    <port>8180:8080</port>
+                  </ports>
+                  <wait>
+                    <log>(?s)Keycloak 8.0.0 \(WildFly Core 10.0.0.Final\) started</log>
+                    <time>60000</time>
+                  </wait>
+                  <env>
+                    <KEYCLOAK_USER>admin</KEYCLOAK_USER>
+                    <KEYCLOAK_PASSWORD>admin</KEYCLOAK_PASSWORD>
+                    <KEYCLOAK_IMPORT>/tmp/realm.json</KEYCLOAK_IMPORT>
+                  </env>
+                  <volumes>
+                    <bind>
+                      <volume>${project.basedir}/../digital-payments-engine-app/src/test/resources/keycloak/realm.json:/tmp/realm.json</volume>
+                    </bind>
+                  </volumes>
+                </run>
+              </image>
+            </images>
+          </configuration>
+          <executions>
+            <execution>
+              <id>start-docker-services</id>
+              <goals>
+                <goal>start</goal>
+              </goals>
+            </execution>
+            <execution>
+              <id>stop-docker-services</id>
+              <goals>
+                <goal>stop</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-failsafe-plugin</artifactId>
+          <version>${failsafe-plugin.version}</version>
+          <executions>
+            <execution>
+              <goals>
+                <goal>integration-test</goal>
+                <goal>verify</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </pluginManagement>
   </build>
 
   <profiles>
