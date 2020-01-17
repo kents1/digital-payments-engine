@@ -162,31 +162,6 @@
                   </env>
                 </run>
               </image>
-              <!-- Keycloak -->
-              <image>
-                <name>jboss/keycloak:8.0.0</name>
-                <alias>docker-keycloak</alias>
-                <run>
-                  <containerNamePattern>dpe-keycloak</containerNamePattern>
-                  <ports>
-                    <port>8180:8080</port>
-                  </ports>
-                  <wait>
-                    <log>(?s)Keycloak 8.0.0 \(WildFly Core 10.0.0.Final\) started</log>
-                    <time>60000</time>
-                  </wait>
-                  <env>
-                    <KEYCLOAK_USER>admin</KEYCLOAK_USER>
-                    <KEYCLOAK_PASSWORD>admin</KEYCLOAK_PASSWORD>
-                    <KEYCLOAK_IMPORT>/tmp/realm.json</KEYCLOAK_IMPORT>
-                  </env>
-                  <volumes>
-                    <bind>
-                      <volume>${project.basedir}/../digital-payments-engine-app/src/test/resources/keycloak/realm.json:/tmp/realm.json</volume>
-                    </bind>
-                  </volumes>
-                </run>
-              </image>
             </images>
           </configuration>
           <executions>
