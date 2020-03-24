@@ -12,12 +12,8 @@
   <name>Digital Payments Engine</name>
 
   <modules>
-    <module>digital-payments-engine-domain</module>
-    <module>digital-payments-engine-api</module>
-    <module>digital-payments-engine-service</module>
-    <module>digital-payments-engine-service-impl</module>
-    <module>digital-payments-engine-repository</module>
-    <module>digital-payments-engine-repository-impl</module>
+    <module>digital-payments-engine-shared-kernel</module>
+    <module>digital-payments-engine-module-merchant</module>
     <module>digital-payments-engine-app</module>
     <module>digital-payments-engine-functional-test</module>
   </modules>
@@ -33,7 +29,7 @@
     <maven.compiler.target>${java.version}</maven.compiler.target>
 
     <!-- Core Versions -->
-    <quarkus.version>1.0.0.Final</quarkus.version>
+    <quarkus.version>1.2.0.Final</quarkus.version>
     <jdbi.version>3.10.1</jdbi.version>
 
     <!-- Library Versions -->

@@ -1,2 +1,5 @@
 # digital-payments-engine
-Digital Payment Engine
+
+Domain
+--
+Merchant - Account owned by a user who wants to sell on the platform.
